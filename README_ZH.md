@@ -5,6 +5,7 @@
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Built with Claude](https://img.shields.io/badge/Built_with-Claude-cc785c?logo=anthropic&logoColor=white)
+![Docker Pulls](https://img.shields.io/docker/pulls/as6325400/wg-portal-backend?label=Docker%20Pulls)
 
 自架 WireGuard 管理網頁介面，支援 Linux PAM 認證。
 
@@ -99,11 +100,33 @@ openssl rand -hex 32   # SESSION_SECRET 和 ENCRYPTION_KEY 都可使用
 docker compose up -d
 ```
 
+映像檔會自動從 Docker Hub 拉取。若要使用特定版本：
+
+```bash
+TAG=1.0.0 docker compose up -d
+```
+
 開啟 `http://你的伺服器` 並使用主機上的 Linux 帳號登入。
 
 > **備註：** 屬於 `sudo` 或 `wheel` 群組的使用者（或 `root`）會自動獲得管理員權限。
 
+### Docker 映像
+
+| 映像 | 說明 |
+|------|------|
+| [`as6325400/wg-portal-wireguard`](https://hub.docker.com/r/as6325400/wg-portal-wireguard) | WireGuard 介面容器 |
+| [`as6325400/wg-portal-backend`](https://hub.docker.com/r/as6325400/wg-portal-backend) | Express API + PAM 認證 |
+| [`as6325400/wg-portal-frontend`](https://hub.docker.com/r/as6325400/wg-portal-frontend) | Nginx 提供 Vue SPA |
+
 ## 開發
+
+### 本地建置
+
+若要在本地 build 映像而非從 Docker Hub 拉取：
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
+```
 
 ### Docker 開發模式
 
@@ -163,7 +186,8 @@ npm run dev:client
 
 ```
 wg-portal/
-├── docker-compose.yml          # 正式部署
+├── docker-compose.yml          # 正式部署（從 Docker Hub 拉取）
+├── docker-compose.build.yml    # 覆寫設定，本地建置映像
 ├── docker-compose.dev.yml      # 開發模式（熱更新）
 ├── docker/
 │   ├── Dockerfile.frontend     # 多階段建置：Node build → Nginx

@@ -1,0 +1,18 @@
+services:
+  wireguard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.wireguard
+    image: wg-portal-wireguard:local
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: wg-portal-backend:local
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: wg-portal-frontend:local

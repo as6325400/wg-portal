@@ -1,8 +1,6 @@
 services:
   wireguard:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.wireguard
+    image: ${DOCKERHUB_USERNAME:-as6325400}/wg-portal-wireguard:${TAG:-latest}
     container_name: wg-portal-wireguard
     cap_add:
       - NET_ADMIN
@@ -28,9 +26,7 @@ services:
     restart: unless-stopped
 
   backend:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.backend
+    image: ${DOCKERHUB_USERNAME:-as6325400}/wg-portal-backend:${TAG:-latest}
     container_name: wg-portal-backend
     network_mode: "service:wireguard"
     cap_add:
@@ -61,9 +57,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.frontend
+    image: ${DOCKERHUB_USERNAME:-as6325400}/wg-portal-frontend:${TAG:-latest}
     container_name: wg-portal-frontend
     ports:
       - "${HTTP_PORT:-80}:80"

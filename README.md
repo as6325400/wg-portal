@@ -5,6 +5,7 @@
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Built with Claude](https://img.shields.io/badge/Built_with-Claude-cc785c?logo=anthropic&logoColor=white)
+![Docker Pulls](https://img.shields.io/docker/pulls/as6325400/wg-portal-backend?label=Docker%20Pulls)
 
 A self-hosted WireGuard management web interface with Linux PAM authentication.
 
@@ -60,7 +61,7 @@ Backend shares WireGuard's network namespace (`network_mode: service:wireguard`)
 - Docker + Docker Compose
 - Linux kernel 5.6+ (built-in WireGuard support)
 
-### 1. Clone
+### 1. Download
 
 ```bash
 git clone https://github.com/as6325400/wg-portal.git
@@ -99,11 +100,33 @@ openssl rand -hex 32   # Use for both SESSION_SECRET and ENCRYPTION_KEY
 docker compose up -d
 ```
 
+Images are automatically pulled from Docker Hub. To use a specific version:
+
+```bash
+TAG=1.0.0 docker compose up -d
+```
+
 Open `http://your-server` and log in with any Linux user account on the host.
 
 > **Note:** Users in the `sudo` or `wheel` group (or `root`) are automatically granted admin access.
 
+### Docker Images
+
+| Image | Description |
+|-------|-------------|
+| [`as6325400/wg-portal-wireguard`](https://hub.docker.com/r/as6325400/wg-portal-wireguard) | WireGuard interface container |
+| [`as6325400/wg-portal-backend`](https://hub.docker.com/r/as6325400/wg-portal-backend) | Express API + PAM auth |
+| [`as6325400/wg-portal-frontend`](https://hub.docker.com/r/as6325400/wg-portal-frontend) | Nginx serving Vue SPA |
+
 ## Development
+
+### Local Build
+
+To build images locally instead of pulling from Docker Hub:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up --build
+```
 
 ### Docker Dev Mode
 
@@ -163,7 +186,8 @@ npm run dev:client
 
 ```
 wg-portal/
-├── docker-compose.yml          # Production deployment
+├── docker-compose.yml          # Production deployment (pulls from Docker Hub)
+├── docker-compose.build.yml    # Override to build images locally
 ├── docker-compose.dev.yml      # Development with hot reload
 ├── docker/
 │   ├── Dockerfile.frontend     # Multi-stage: Node build → Nginx
