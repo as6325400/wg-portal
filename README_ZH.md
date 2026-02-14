@@ -54,7 +54,7 @@
 ### 1. 下載
 
 ```bash
-git clone https://github.com/your-username/wg-portal.git
+git clone https://github.com/as6325400/wg-portal.git
 cd wg-portal
 ```
 

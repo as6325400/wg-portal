@@ -54,7 +54,7 @@ Backend shares WireGuard's network namespace (`network_mode: service:wireguard`)
 ### 1. Clone
 
 ```bash
-git clone https://github.com/your-username/wg-portal.git
+git clone https://github.com/as6325400/wg-portal.git
 cd wg-portal
 ```
 
