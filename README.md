@@ -1,6 +1,7 @@
 # wg-portal
 
-[![zh-TW](https://img.shields.io/badge/lang-繁體中文-blue)](README_ZH.md)
+[中文版 README](README_ZH.md)
+
 ![WireGuard](https://img.shields.io/badge/WireGuard-88171A?logo=wireguard&logoColor=white)
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
@@ -86,6 +87,7 @@ WG_ENDPOINT=your.server.public.ip:51820
 WG_SUBNET=10.0.0.0/24
 WG_DNS=1.1.1.1
 HTTP_PORT=80
+TAG=latest                 # Docker image version (e.g. 1.0.0, 1.0.0-beta.1)
 ```
 
 Generate secrets:
@@ -181,6 +183,7 @@ npm run dev:client
 | `WG_PORT` | `51820` | WireGuard listen port |
 | `HTTP_PORT` | `80` | Frontend HTTP port |
 | `PORT` | `3000` | Backend server port |
+| `TAG` | `latest` | Docker image version tag |
 
 ## Project Structure
 

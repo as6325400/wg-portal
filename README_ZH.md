@@ -1,6 +1,7 @@
 # wg-portal
 
-[![en](https://img.shields.io/badge/lang-English-blue)](README.md)
+[English README](README.md)
+
 ![WireGuard](https://img.shields.io/badge/WireGuard-88171A?logo=wireguard&logoColor=white)
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
@@ -86,6 +87,7 @@ WG_ENDPOINT=你的伺服器公網IP:51820
 WG_SUBNET=10.0.0.0/24
 WG_DNS=1.1.1.1
 HTTP_PORT=80
+TAG=latest                 # Docker 映像版本（如 1.0.0、1.0.0-beta.1）
 ```
 
 產生密鑰：
@@ -181,6 +183,7 @@ npm run dev:client
 | `WG_PORT` | `51820` | WireGuard 監聽埠 |
 | `HTTP_PORT` | `80` | 前端 HTTP 埠 |
 | `PORT` | `3000` | 後端伺服器埠 |
+| `TAG` | `latest` | Docker 映像版本標籤 |
 
 ## 專案結構
 
