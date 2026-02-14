@@ -1,14 +1,23 @@
 # wg-portal
 
 [![zh-TW](https://img.shields.io/badge/lang-繁體中文-blue)](README_ZH.md)
+![WireGuard](https://img.shields.io/badge/WireGuard-88171A?logo=wireguard&logoColor=white)
+![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
+![Built with Claude](https://img.shields.io/badge/Built_with-Claude-cc785c?logo=anthropic&logoColor=white)
 
 A self-hosted WireGuard management web interface with Linux PAM authentication.
 
 ## Screenshots
 
-| Login | Dashboard | Admin |
-|-------|-----------|-------|
-| ![Login](docs/screenshots/en/login.png) | ![Dashboard](docs/screenshots/en/dashboard.png) | ![Admin](docs/screenshots/en/admin.png) |
+### Login
+![Login](docs/screenshots/en/login.png)
+
+### Dashboard
+![Dashboard](docs/screenshots/en/dashboard.png)
+
+### Admin
+![Admin](docs/screenshots/en/admin.png)
 
 ## Features
 

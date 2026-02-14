@@ -1,14 +1,23 @@
 # wg-portal
 
 [![en](https://img.shields.io/badge/lang-English-blue)](README.md)
+![WireGuard](https://img.shields.io/badge/WireGuard-88171A?logo=wireguard&logoColor=white)
+![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
+![Built with Claude](https://img.shields.io/badge/Built_with-Claude-cc785c?logo=anthropic&logoColor=white)
 
 自架 WireGuard 管理網頁介面，支援 Linux PAM 認證。
 
 ## 截圖
 
-| 登入 | 儀表板 | 管理 |
-|------|--------|------|
-| ![Login](docs/screenshots/zh-TW/login.png) | ![Dashboard](docs/screenshots/zh-TW/dashboard.png) | ![Admin](docs/screenshots/zh-TW/admin.png) |
+### 登入
+![Login](docs/screenshots/zh-TW/login.png)
+
+### 儀表板
+![Dashboard](docs/screenshots/zh-TW/dashboard.png)
+
+### 管理
+![Admin](docs/screenshots/zh-TW/admin.png)
 
 ## 功能
 
