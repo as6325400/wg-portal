@@ -2,13 +2,14 @@
 
 [English README](README.md)
 
+自架 WireGuard 管理網頁介面，支援 Linux PAM 認證。
+
 ![WireGuard](https://img.shields.io/badge/WireGuard-88171A?logo=wireguard&logoColor=white)
 ![Vue 3](https://img.shields.io/badge/Vue_3-4FC08D?logo=vuedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
 ![Built with Claude](https://img.shields.io/badge/Built_with-Claude-cc785c?logo=anthropic&logoColor=white)
 ![Docker Pulls](https://img.shields.io/docker/pulls/as6325400/wg-portal-backend?label=Docker%20Pulls)
 
-自架 WireGuard 管理網頁介面，支援 Linux PAM 認證。
 
 ## 截圖
 
