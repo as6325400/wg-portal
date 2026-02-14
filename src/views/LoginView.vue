@@ -44,13 +44,10 @@
       </button>
     </form>
 
-    <!-- Language toggle on login page -->
-    <button
-      @click="toggleLocale"
-      class="mt-4 rounded-lg px-3 py-1.5 text-xs text-slate-400 transition hover:bg-white hover:text-slate-600 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
-    >
-      {{ locale.locale === 'en' ? '中文' : 'English' }}
-    </button>
+    <!-- Language menu on login page -->
+    <div class="mt-4">
+      <LanguageMenu variant="ghost" />
+    </div>
   </div>
 </template>
 
@@ -59,8 +56,9 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth.js'
 import { useI18n } from '../i18n/index.js'
+import LanguageMenu from '../components/LanguageMenu.vue'
 
-const { t, locale, setLocale } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
 
@@ -68,10 +66,6 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 const loading = ref(false)
-
-function toggleLocale() {
-  setLocale(locale.locale === 'en' ? 'zh-TW' : 'en')
-}
 
 async function handleLogin() {
   error.value = ''

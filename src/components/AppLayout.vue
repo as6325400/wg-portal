@@ -8,14 +8,7 @@
             <span class="text-indigo-500">wg</span>-portal
           </router-link>
           <div class="flex items-center gap-3">
-            <!-- Language toggle -->
-            <button
-              @click="toggleLocale"
-              class="rounded-lg px-2 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-neutral-300"
-              :title="locale.locale === 'en' ? '切換中文' : 'Switch to English'"
-            >
-              {{ locale.locale === 'en' ? '中文' : 'EN' }}
-            </button>
+            <LanguageMenu />
 
             <router-link
               v-if="authStore.isAdmin"
@@ -52,14 +45,11 @@
 import { useAuthStore } from '../stores/auth.js'
 import { useRouter } from 'vue-router'
 import { useI18n } from '../i18n/index.js'
+import LanguageMenu from './LanguageMenu.vue'
 
-const { t, locale, setLocale } = useI18n()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
-
-function toggleLocale() {
-  setLocale(locale.locale === 'en' ? 'zh-TW' : 'en')
-}
 
 async function handleLogout() {
   await authStore.logout()

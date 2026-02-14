@@ -4,6 +4,11 @@ import zhTW from './zh-TW.js'
 
 const messages = { en, 'zh-TW': zhTW }
 
+export const locales = [
+  { code: 'en', label: 'English' },
+  { code: 'zh-TW', label: '繁體中文' },
+]
+
 const state = reactive({
   locale: localStorage.getItem('locale') || 'en',
 })
@@ -30,5 +35,6 @@ export function useI18n() {
     t,
     locale: state,
     setLocale,
+    locales,
   }
 }
