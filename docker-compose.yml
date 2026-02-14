@@ -1,0 +1,76 @@
+services:
+  wireguard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.wireguard
+    container_name: wg-portal-wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    volumes:
+      - wg-config:/etc/wireguard
+    ports:
+      - "${WG_PORT:-51820}:51820/udp"
+    environment:
+      - WG_INTERFACE=${WG_INTERFACE:-wg0}
+      - WG_SUBNET=${WG_SUBNET:-10.0.0.0/24}
+      - WG_SERVER_IP=${WG_SERVER_IP:-10.0.0.1}
+      - WG_PORT=${WG_PORT:-51820}
+    healthcheck:
+      test: ["CMD", "wg", "show", "wg0"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: wg-portal-backend
+    network_mode: "service:wireguard"
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      wireguard:
+        condition: service_healthy
+    volumes:
+      - wg-data:/app/data
+      - wg-config:/etc/wireguard
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/group:/etc/group:ro
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET is required}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:?ENCRYPTION_KEY is required}
+      - WG_INTERFACE=${WG_INTERFACE:-wg0}
+      - WG_SUBNET=${WG_SUBNET:-10.0.0.0/24}
+      - WG_SERVER_IP=${WG_SERVER_IP:-10.0.0.1}
+      - WG_ENDPOINT=${WG_ENDPOINT:?WG_ENDPOINT is required}
+      - WG_DNS=${WG_DNS:-1.1.1.1}
+      - WG_ALLOWED_IPS=${WG_ALLOWED_IPS:-0.0.0.0/0}
+      - DB_PATH=/app/data/wg-portal.db
+      - PAM_SERVICE=wg-portal
+      - COOKIE_SECURE=false
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    container_name: wg-portal-frontend
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    depends_on:
+      - wireguard
+    restart: unless-stopped
+
+volumes:
+  wg-config:
+  wg-data:

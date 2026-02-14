@@ -1,0 +1,85 @@
+services:
+  wireguard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.wireguard
+    container_name: wg-portal-wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    volumes:
+      - wg-config:/etc/wireguard
+    ports:
+      - "${WG_PORT:-51820}:51820/udp"
+    environment:
+      - WG_INTERFACE=${WG_INTERFACE:-wg0}
+      - WG_SUBNET=${WG_SUBNET:-10.0.0.0/24}
+      - WG_SERVER_IP=${WG_SERVER_IP:-10.0.0.1}
+      - WG_PORT=${WG_PORT:-51820}
+    healthcheck:
+      test: ["CMD", "wg", "show", "wg0"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    container_name: wg-portal-backend
+    network_mode: "service:wireguard"
+    cap_add:
+      - NET_ADMIN
+    depends_on:
+      wireguard:
+        condition: service_healthy
+    volumes:
+      - ./server:/app/server
+      - wg-data:/app/data
+      - wg-config:/etc/wireguard
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/shadow:/etc/shadow:ro
+      - /etc/group:/etc/group:ro
+    command: node --watch server/index.js
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - SESSION_SECRET=${SESSION_SECRET:-dev-secret-change-me}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - WG_INTERFACE=${WG_INTERFACE:-wg0}
+      - WG_SUBNET=${WG_SUBNET:-10.0.0.0/24}
+      - WG_SERVER_IP=${WG_SERVER_IP:-10.0.0.1}
+      - WG_ENDPOINT=${WG_ENDPOINT:-localhost:51820}
+      - WG_DNS=${WG_DNS:-1.1.1.1}
+      - WG_ALLOWED_IPS=${WG_ALLOWED_IPS:-0.0.0.0/0}
+      - DB_PATH=/app/data/wg-portal.db
+      - PAM_SERVICE=wg-portal
+    restart: unless-stopped
+
+  frontend:
+    image: node:22-alpine
+    container_name: wg-portal-frontend
+    working_dir: /app
+    volumes:
+      - ./src:/app/src
+      - ./index.html:/app/index.html
+      - ./vite.config.js:/app/vite.config.js
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - frontend-modules:/app/node_modules
+    ports:
+      - "${HTTP_PORT:-5173}:5173"
+    command: sh -c "npm install --ignore-scripts 2>/dev/null && npx vite --host"
+    environment:
+      - API_PROXY=http://wireguard:3000
+    restart: unless-stopped
+
+volumes:
+  wg-config:
+  wg-data:
+  frontend-modules:
