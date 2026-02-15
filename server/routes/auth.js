@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { authenticate } from '../services/pam.js'
+import { ldapAuthenticate, isLdapEnabled } from '../services/ldap.js'
 import { userExists, isAdmin, isInAllowedGroup } from '../services/linux-user.js'
 import { loginLimiter } from '../middleware/rateLimit.js'
 import { requireAuth } from '../middleware/auth.js'
@@ -14,27 +15,68 @@ router.post('/login', loginLimiter, async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required' })
   }
 
-  if (!userExists(username)) {
-    return res.status(401).json({ error: 'Invalid credentials' })
+  if (!/^[a-zA-Z0-9_.-]{1,64}$/.test(username)) {
+    return res.status(400).json({ error: 'Invalid username format' })
   }
 
-  // sudo/root users always bypass group check
-  if (!isAdmin(username)) {
-    const dbSetting = db.prepare('SELECT value FROM settings WHERE key = ?').get('allowed_groups')
-    const allowedGroups = dbSetting ? JSON.parse(dbSetting.value) : []
+  let authSource = null
+  let role = 'user'
+  let ldapGroups = []
 
-    if (!isInAllowedGroup(username, allowedGroups)) {
-      return res.status(403).json({ error: 'Your group is not allowed to use this service' })
+  // Try LDAP first (if configured)
+  if (isLdapEnabled()) {
+    try {
+      const ldapResult = await ldapAuthenticate(username, password)
+      authSource = 'ldap'
+      role = ldapResult.isAdmin ? 'admin' : 'user'
+      ldapGroups = ldapResult.groups
+    } catch {
+      // LDAP failed, will try PAM below
     }
   }
 
-  try {
-    await authenticate(username, password)
-  } catch {
+  // Fall back to PAM (local Linux accounts)
+  if (!authSource && userExists(username)) {
+    if (!isAdmin(username)) {
+      const groupsRow = db.prepare('SELECT value FROM settings WHERE key = ?').get('allowed_groups')
+      const usersRow = db.prepare('SELECT value FROM settings WHERE key = ?').get('allowed_users')
+      const allowedGroups = groupsRow ? JSON.parse(groupsRow.value) : []
+      const allowedUsers = usersRow ? JSON.parse(usersRow.value) : []
+
+      const noRestriction = allowedGroups.length === 0 && allowedUsers.length === 0
+      if (!noRestriction && !allowedUsers.includes(username) && !isInAllowedGroup(username, allowedGroups)) {
+        return res.status(403).json({ error: 'Your group is not allowed to use this service' })
+      }
+    }
+
+    try {
+      await authenticate(username, password)
+      authSource = 'pam'
+      role = isAdmin(username) ? 'admin' : 'user'
+    } catch {
+      // PAM failed
+    }
+  }
+
+  if (!authSource) {
     return res.status(401).json({ error: 'Invalid credentials' })
   }
 
-  const role = isAdmin(username) ? 'admin' : 'user'
+  // For LDAP users, check allowed groups/users (admin bypasses)
+  if (authSource === 'ldap' && role !== 'admin') {
+    const groupsRow = db.prepare('SELECT value FROM settings WHERE key = ?').get('allowed_groups')
+    const usersRow = db.prepare('SELECT value FROM settings WHERE key = ?').get('allowed_users')
+    const allowedGroups = groupsRow ? JSON.parse(groupsRow.value) : []
+    const allowedUsers = usersRow ? JSON.parse(usersRow.value) : []
+
+    const noRestriction = allowedGroups.length === 0 && allowedUsers.length === 0
+    if (!noRestriction && !allowedUsers.includes(username)) {
+      const inAllowed = ldapGroups.some(g => allowedGroups.includes(g))
+      if (!inAllowed) {
+        return res.status(403).json({ error: 'Your group is not allowed to use this service' })
+      }
+    }
+  }
 
   // Upsert user
   const existingUser = db.prepare('SELECT * FROM users WHERE username = ?').get(username)
@@ -43,14 +85,20 @@ router.post('/login', loginLimiter, async (req, res) => {
     if (!existingUser.enabled) {
       return res.status(403).json({ error: 'Account is disabled' })
     }
-    db.prepare('UPDATE users SET role = ? WHERE id = ?').run(role, existingUser.id)
-    user = { ...existingUser, role }
+    db.prepare('UPDATE users SET role = ?, auth_source = ? WHERE id = ?').run(role, authSource, existingUser.id)
+    user = { ...existingUser, role, auth_source: authSource }
   } else {
-    const result = db.prepare('INSERT INTO users (username, role) VALUES (?, ?)').run(username, role)
-    user = { id: result.lastInsertRowid, username, role, max_devices: 5, enabled: 1 }
+    const result = db.prepare('INSERT INTO users (username, role, auth_source) VALUES (?, ?, ?)').run(username, role, authSource)
+    user = { id: result.lastInsertRowid, username, role, auth_source: authSource, max_devices: 5, enabled: 1 }
   }
 
-  req.session.user = { id: user.id, username: user.username, role: user.role }
+  req.session.user = {
+    id: user.id,
+    username: user.username,
+    role: user.role,
+    auth_source: authSource,
+    ldap_groups: authSource === 'ldap' ? ldapGroups : undefined,
+  }
 
   res.json({ user: { id: user.id, username: user.username, role: user.role } })
 })

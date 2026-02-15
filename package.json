@@ -22,6 +22,7 @@
     "express-rate-limit": "^8.2.1",
     "express-session": "^1.19.0",
     "helmet": "^8.1.0",
+    "ldapts": "^8.1.6",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

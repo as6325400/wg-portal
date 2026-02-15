@@ -15,6 +15,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('admin', 'user')),
+    auth_source TEXT NOT NULL DEFAULT 'pam' CHECK(auth_source IN ('pam', 'ldap')),
     max_devices INTEGER NOT NULL DEFAULT 5,
     enabled INTEGER NOT NULL DEFAULT 1,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
@@ -40,5 +41,12 @@ db.exec(`
     value TEXT NOT NULL
   );
 `)
+
+// Migration: add auth_source column if missing (for existing databases)
+try {
+  db.exec(`ALTER TABLE users ADD COLUMN auth_source TEXT NOT NULL DEFAULT 'pam' CHECK(auth_source IN ('pam', 'ldap'))`)
+} catch {
+  // Column already exists
+}
 
 export default db

@@ -8,7 +8,7 @@ export default {
 
   // Login
   login: {
-    subtitle: '使用 Linux 帳號登入',
+    subtitle: '登入以管理您的 VPN',
     username: '使用者名稱',
     password: '密碼',
     submit: '登入',
@@ -68,10 +68,13 @@ export default {
     disabled: '已停用',
     devices: '裝置',
     edit: '編輯',
-    allowedGroups: '允許的群組',
-    groupsDescription: '選擇允許登入的 Linux 群組。若未選擇任何群組，則所有群組皆可登入。',
+    allowedGroups: '存取控制',
+    groupsDescription: '選擇允許登入的群組或個別使用者。展開群組可單獨選擇成員。若未選擇任何項目，則所有使用者皆可登入。',
     loadingGroups: '載入群組中...',
-    all: '全部',
+    selectAll: '全選',
+    deselectAll: '取消全選',
+    noRestriction: '不限制（所有使用者皆可登入）',
+    selectedCount: '涵蓋 {covered} 位使用者',
     settingsSaved: '設定已儲存',
     settingsFailed: '儲存設定失敗',
   },

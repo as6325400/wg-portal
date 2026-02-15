@@ -8,7 +8,7 @@ export default {
 
   // Login
   login: {
-    subtitle: 'Sign in with your Linux account',
+    subtitle: 'Sign in to manage your VPN',
     username: 'Username',
     password: 'Password',
     submit: 'Sign In',
@@ -68,10 +68,13 @@ export default {
     disabled: 'disabled',
     devices: 'devices',
     edit: 'Edit',
-    allowedGroups: 'Allowed Groups',
-    groupsDescription: 'Select which Linux groups are allowed to log in. If none are selected, all groups are allowed.',
+    allowedGroups: 'Access Control',
+    groupsDescription: 'Select which groups or individual users are allowed to log in. Expand a group to select individual members. If nothing is selected, all users are allowed.',
     loadingGroups: 'Loading groups...',
-    all: 'All',
+    selectAll: 'Select All',
+    deselectAll: 'Deselect All',
+    noRestriction: 'No restriction (all users allowed)',
+    selectedCount: 'Covers {covered} user(s)',
     settingsSaved: 'Settings saved',
     settingsFailed: 'Failed to save settings',
   },

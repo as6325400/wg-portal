@@ -54,6 +54,13 @@ services:
       - DB_PATH=/app/data/wg-portal.db
       - PAM_SERVICE=wg-portal
       - COOKIE_SECURE=false
+      - LDAP_URL=${LDAP_URL:-}
+      - LDAP_BIND_DN=${LDAP_BIND_DN:-}
+      - LDAP_BIND_PASSWORD=${LDAP_BIND_PASSWORD:-}
+      - LDAP_BASE_DN=${LDAP_BASE_DN:-}
+      - LDAP_USER_FILTER=${LDAP_USER_FILTER:-(uid={username})}
+      - LDAP_ADMIN_GROUP=${LDAP_ADMIN_GROUP:-}
+      - LDAP_TLS_REJECT_UNAUTHORIZED=${LDAP_TLS_REJECT_UNAUTHORIZED:-true}
     restart: unless-stopped
 
   frontend:
