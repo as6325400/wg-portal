@@ -8,6 +8,7 @@ import { sessionMiddleware } from './middleware/session.js'
 import authRoutes from './routes/auth.js'
 import deviceRoutes from './routes/devices.js'
 import adminRoutes from './routes/admin.js'
+import ssoRoutes from './routes/sso.js'
 import { getPeersStatus } from './services/wireguard.js'
 import db from './db.js'
 
@@ -30,6 +31,7 @@ app.use(sessionMiddleware)
 app.use('/api/auth', authRoutes)
 app.use('/api/devices', deviceRoutes)
 app.use('/api/admin', adminRoutes)
+app.use('/api/sso', ssoRoutes)
 
 // Periodic traffic stats update
 function updateTrafficStats() {

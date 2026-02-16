@@ -68,6 +68,8 @@ services:
       - LDAP_USER_FILTER=${LDAP_USER_FILTER:-(uid={username})}
       - LDAP_ADMIN_GROUP=${LDAP_ADMIN_GROUP:-}
       - LDAP_TLS_REJECT_UNAUTHORIZED=${LDAP_TLS_REJECT_UNAUTHORIZED:-true}
+      - SSO_SECRET=${SSO_SECRET:-}
+      - SITE_URL=${SITE_URL:-}
     restart: unless-stopped
 
   frontend:
